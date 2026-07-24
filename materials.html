@@ -1,1 +1,200 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Master - PWD Store Management</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="materials.html">Material Master</a>
+<a href="receipt.html">Receipt Register</a>
+<a href="issue.html">Issue Register</a>
+<a href="ledger.html">Stock Ledger</a>
+<a href="stock.html">Current Stock</a>
+</nav>
+
+<header>
+<h1>Material Master</h1>
+<p>Add and Manage Store Materials</p>
+</header>
+
+<div class="page">
+
+<div class="box">
+
+<h2>Add New Material</h2>
+
+<input type="text" id="materialName" placeholder="Material Name">
+
+<select id="unit">
+<option value="">Select Unit</option>
+<option>Bag</option>
+<option>Kg</option>
+<option>Nos</option>
+<option>Meter</option>
+<option>Litre</option>
+<option>Cum</option>
+<option>Sqm</option>
+<option>Box</option>
+<option>Roll</option>
+</select>
+
+<input type="number" id="openingStock" placeholder="Opening Stock">
+
+<button onclick="addMaterial()">
+Add Material
+</button>
+
+</div>
+
+<div class="box">
+
+<h2>Material List</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>S.No.</th>
+
+<th>Material</th>
+
+<th>Unit</th>
+
+<th>Opening Stock</th>
+
+<th>Current Balance</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="materialTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let materials = JSON.parse(localStorage.getItem("materials")) || [];
+
+function saveMaterials(){
+
+localStorage.setItem("materials",JSON.stringify(materials));
+
+}
+
+function addMaterial(){
+
+let name=document.getElementById("materialName").value;
+
+let unit=document.getElementById("unit").value;
+
+let opening=Number(document.getElementById("openingStock").value);
+
+if(name==""||unit==""){
+
+alert("Enter Material Name and Unit");
+
+return;
+
+}
+
+materials.push({
+
+name:name,
+
+unit:unit,
+
+balance:opening
+
+});
+
+saveMaterials();
+
+document.getElementById("materialName").value="";
+
+document.getElementById("openingStock").value="";
+
+loadTable();
+
+}
+
+function loadTable(){
+
+let html="";
+
+materials.forEach(function(m,index){
+
+html+=`
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${m.name}</td>
+
+<td>${m.unit}</td>
+
+<td>${m.balance}</td>
+
+<td>${m.balance}</td>
+
+<td>
+
+<button onclick="deleteMaterial(${index})">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("materialTable").innerHTML=html;
+
+}
+
+function deleteMaterial(index){
+
+if(confirm("Delete Material?")){
+
+materials.splice(index,1);
+
+saveMaterials();
+
+loadTable();
+
+}
+
+}
+
+loadTable();
+
+</script>
+
+</body>
+
+</html>
