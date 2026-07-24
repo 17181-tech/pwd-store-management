@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Cement",
+    "unit": "Bag",
+    "balance": 0
+  },
+  {
+    "name": "TMT Steel 8 mm",
+    "unit": "Kg",
+    "balance": 0
+  },
+  {
+    "name": "TMT Steel 10 mm",
+    "unit": "Kg",
+    "balance": 0
+  },
+  {
+    "name": "TMT Steel 12 mm",
+    "unit": "Kg",
+    "balance": 0
+  },
+  {
+    "name": "Sand",
+    "unit": "Cum",
+    "balance": 0
+  },
+  {
+    "name": "Aggregate 20 mm",
+    "unit": "Cum",
+    "balance": 0
+  },
+  {
+    "name": "Bricks",
+    "unit": "Nos",
+    "balance": 0
+  },
+  {
+    "name": "Paint",
+    "unit": "Litre",
+    "balance": 0
+  },
+  {
+    "name": "PVC Pipe",
+    "unit": "Meter",
+    "balance": 0
+  },
+  {
+    "name": "GI Pipe",
+    "unit": "Meter",
+    "balance": 0
+  }
+]
