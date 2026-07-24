@@ -1,1 +1,120 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current Stock</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav>
+
+<a href="index.html">Dashboard</a>
+<a href="materials.html">Material Master</a>
+<a href="receipt.html">Receipt Register</a>
+<a href="issue.html">Issue Register</a>
+<a href="ledger.html">Stock Ledger</a>
+<a href="stock.html">Current Stock</a>
+
+</nav>
+
+<header>
+
+<h1>Current Stock Register</h1>
+
+<p>Latest Available Store Balance</p>
+
+</header>
+
+<div class="page">
+
+<div class="box">
+
+<h2>Current Stock Position</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>S.No.</th>
+<th>Material</th>
+<th>Unit</th>
+<th>Available Stock</th>
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="stockTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let materials = JSON.parse(localStorage.getItem("materials")) || [];
+
+function loadStock(){
+
+let html="";
+
+materials.forEach(function(m,index){
+
+let status="Available";
+
+if(m.balance<=0){
+
+status="Out of Stock";
+
+}
+
+else if(m.balance<10){
+
+status="Low Stock";
+
+}
+
+html+=`
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${m.name}</td>
+
+<td>${m.unit}</td>
+
+<td>${m.balance}</td>
+
+<td>${status}</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("stockTable").innerHTML=html;
+
+}
+
+loadStock();
+
+</script>
+
+</body>
+
+</html>
