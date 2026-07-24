@@ -1,1 +1,250 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Issue Register - PWD Store Management</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="materials.html">Material Master</a>
+<a href="receipt.html">Receipt Register</a>
+<a href="issue.html">Issue Register</a>
+<a href="ledger.html">Stock Ledger</a>
+<a href="stock.html">Current Stock</a>
+</nav>
+
+<header>
+<h1>Issue Register</h1>
+<p>Issue Materials to Sites</p>
+</header>
+
+<div class="page">
+
+<div class="box">
+
+<h2>Issue Material</h2>
+
+<label>Date</label><br>
+<input type="date" id="issueDate"><br><br>
+
+<label>Material</label><br>
+<select id="issueMaterial"></select><br><br>
+
+<label>Available Stock</label><br>
+<input type="text" id="availableStock" readonly><br><br>
+
+<label>Quantity Issued</label><br>
+<input type="number" id="issueQty"><br><br>
+
+<label>Site Name</label><br>
+<input type="text" id="siteName" placeholder="DGD Mundka"><br><br>
+
+<label>Indent No.</label><br>
+<input type="text" id="indentNo"><br><br>
+
+<label>Issued By</label><br>
+<input type="text" id="issuedBy"><br><br>
+
+<label>Received By</label><br>
+<input type="text" id="receivedBy"><br><br>
+
+<label>Remarks</label><br>
+<input type="text" id="issueRemarks"><br><br>
+
+<button onclick="saveIssue()">Save Issue</button>
+
+</div>
+
+<div class="box">
+
+<h2>Issue Register</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+<th>Material</th>
+<th>Qty</th>
+<th>Site</th>
+<th>Indent</th>
+<th>Issued By</th>
+<th>Received By</th>
+<th>Remarks</th>
+
+</tr>
+
+</thead>
+
+<tbody id="issueTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let materials = JSON.parse(localStorage.getItem("materials")) || [];
+let issues = JSON.parse(localStorage.getItem("issues")) || [];
+
+function saveData(){
+localStorage.setItem("materials",JSON.stringify(materials));
+localStorage.setItem("issues",JSON.stringify(issues));
+}
+
+function loadMaterials(){
+
+let select=document.getElementById("issueMaterial");
+
+select.innerHTML="<option value=''>Select Material</option>";
+
+materials.forEach(function(item,index){
+
+select.innerHTML+=`<option value="${index}">
+${item.name}
+</option>`;
+
+});
+
+}
+
+document.getElementById("issueMaterial").addEventListener("change",function(){
+
+if(this.value=="") return;
+
+let material=materials[this.value];
+
+document.getElementById("availableStock").value=
+material.balance+" "+material.unit;
+
+});
+
+function saveIssue(){
+
+let date=document.getElementById("issueDate").value;
+
+let index=document.getElementById("issueMaterial").value;
+
+let qty=Number(document.getElementById("issueQty").value);
+
+let site=document.getElementById("siteName").value;
+
+let indent=document.getElementById("indentNo").value;
+
+let issuedBy=document.getElementById("issuedBy").value;
+
+let receivedBy=document.getElementById("receivedBy").value;
+
+let remarks=document.getElementById("issueRemarks").value;
+
+if(date==""||index==""||qty<=0){
+
+alert("Please fill all required fields.");
+
+return;
+
+}
+
+if(qty>materials[index].balance){
+
+alert("Insufficient Stock.");
+
+return;
+
+}
+
+materials[index].balance-=qty;
+
+issues.push({
+
+date:date,
+
+material:materials[index].name,
+
+unit:materials[index].unit,
+
+qty:qty,
+
+site:site,
+
+indent:indent,
+
+issuedBy:issuedBy,
+
+receivedBy:receivedBy,
+
+remarks:remarks
+
+});
+
+saveData();
+
+loadTable();
+
+document.getElementById("issueQty").value="";
+document.getElementById("siteName").value="";
+document.getElementById("indentNo").value="";
+document.getElementById("issuedBy").value="";
+document.getElementById("receivedBy").value="";
+document.getElementById("issueRemarks").value="";
+
+alert("Issue Saved Successfully.");
+
+}
+
+function loadTable(){
+
+let html="";
+
+issues.forEach(function(i){
+
+html+=`
+
+<tr>
+
+<td>${i.date}</td>
+
+<td>${i.material}</td>
+
+<td>${i.qty} ${i.unit}</td>
+
+<td>${i.site}</td>
+
+<td>${i.indent}</td>
+
+<td>${i.issuedBy}</td>
+
+<td>${i.receivedBy}</td>
+
+<td>${i.remarks}</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("issueTable").innerHTML=html;
+
+}
+
+loadMaterials();
+
+loadTable();
+
+</script>
+
+</body>
+</html>
