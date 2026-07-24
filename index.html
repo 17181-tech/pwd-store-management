@@ -3,102 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>PWD Store Management System</title>
 
-<style>
-body{
-font-family:Arial,sans-serif;
-background:#f5f5f5;
-margin:0;
-}
-
-header{
-background:#003366;
-color:white;
-padding:15px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
-}
-
-.container{
-width:95%;
-margin:auto;
-padding:20px;
-}
-
-input{
-padding:10px;
-margin:5px;
-width:160px;
-}
-
-button{
-padding:10px 20px;
-margin:5px;
-background:#007bff;
-color:white;
-border:none;
-cursor:pointer;
-}
-
-button:hover{
-background:#0056b3;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-background:white;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:10px;
-text-align:center;
-}
-
-th{
-background:#003366;
-color:white;
-}
-
-tfoot{
-font-weight:bold;
-background:#eee;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
 <header>
-PWD STORE MANAGEMENT SYSTEM
+    <div class="logo">
+        <h1>🏢 PWD Store Management System</h1>
+        <p>Daily Stock Register</p>
+    </div>
 </header>
 
 <div class="container">
 
-<h2>Daily Stock Report</h2>
+<!-- Dashboard -->
 
-<input type="date" id="date">
+<section class="dashboard">
 
-<input type="text" id="material" placeholder="Material">
+<div class="card">
+<h2>Total Materials</h2>
+<h1 id="totalMaterials">0</h1>
+</div>
 
-<input type="text" id="unit" placeholder="Unit">
+<div class="card">
+<h2>Total Received Today</h2>
+<h1 id="receivedToday">0</h1>
+</div>
 
-<input type="number" id="opening" placeholder="Opening Stock">
+<div class="card">
+<h2>Total Issued Today</h2>
+<h1 id="issuedToday">0</h1>
+</div>
 
-<input type="number" id="received" placeholder="Received">
+<div class="card">
+<h2>Current Stock</h2>
+<h1 id="currentStock">0</h1>
+</div>
 
-<input type="number" id="issued" placeholder="Issued">
+</section>
 
-<input type="number" id="rate" placeholder="Rate">
+<hr>
 
-<button onclick="add()">Add Record</button>
+<!-- Material Master -->
 
-<button onclick="window.print()">Print</button>
+<h2>Add New Material</h2>
+
+<div class="form">
+
+<input
+type="text"
+id="materialName"
+placeholder="Material Name">
+
+<select id="unit">
+<option value="">Select Unit</option>
+<option>Bag</option>
+<option>Kg</option>
+<option>Litre</option>
+<option>Nos</option>
+<option>Meter</option>
+<option>Sqm</option>
+<option>Cum</option>
+<option>Box</option>
+</select>
+
+<button onclick="addMaterial()">
+Add Material
+</button>
+
+</div>
+
+<hr>
+
+<!-- Daily Stock Entry -->
+
+<h2>Daily Stock Entry</h2>
+
+<div class="form">
+
+<input
+type="date"
+id="date">
+
+<select id="materialSelect">
+<option value="">
+Select Material
+</option>
+</select>
+
+<input
+type="text"
+id="unitDisplay"
+placeholder="Unit"
+readonly>
+
+<input
+type="number"
+id="opening"
+placeholder="Opening Stock"
+readonly>
+
+<input
+type="number"
+id="received"
+placeholder="Received">
+
+<input
+type="number"
+id="issued"
+placeholder="Issued">
+
+<input
+type="text"
+id="remarks"
+placeholder="Remarks">
+
+<button onclick="saveEntry()">
+Save Entry
+</button>
+
+</div>
+
+<hr>
+
+<h2>Current Store Balance</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Material</th>
+
+<th>Unit</th>
+
+<th>Balance</th>
+
+</tr>
+
+</thead>
+
+<tbody id="balanceTable">
+
+</tbody>
+
+</table>
+
+<hr>
+
+<h2>Daily Stock Register</h2>
 
 <table>
 
@@ -120,131 +179,46 @@ PWD STORE MANAGEMENT SYSTEM
 
 <th>Closing</th>
 
-<th>Rate</th>
+<th>Remarks</th>
 
-<th>Value</th>
+<th>Action</th>
 
 </tr>
 
 </thead>
 
-<tbody id="data"></tbody>
-
-<tfoot>
-
-<tr>
-
-<td colspan="8">Total Value</td>
-
-<td id="total">0</td>
-
-</tr>
-
-</tfoot>
+<tbody id="stockTable">
+  </tbody>
 
 </table>
 
+<br>
+
+<div class="buttons">
+
+<button onclick="printReport()">🖨 Print Report</button>
+
+<button onclick="exportData()">📄 Export Data</button>
+
+<button onclick="clearAll()">🗑 Clear All Records</button>
+
 </div>
 
-<script>
+</div>
 
-let records=JSON.parse(localStorage.getItem("pwdstock"))||[];
+<footer>
 
-function show(){
+<p>
 
-let html="";
+© 2026 Delhi PWD Store Management System
 
-let total=0;
+</p>
 
-records.forEach((r)=>{
+</footer>
 
-total+=r.value;
-
-html+=`
-<tr>
-
-<td>${r.date}</td>
-
-<td>${r.material}</td>
-
-<td>${r.unit}</td>
-
-<td>${r.opening}</td>
-
-<td>${r.received}</td>
-
-<td>${r.issued}</td>
-
-<td>${r.closing}</td>
-
-<td>${r.rate}</td>
-
-<td>${r.value}</td>
-
-</tr>
-`;
-
-});
-
-document.getElementById("data").innerHTML=html;
-
-document.getElementById("total").innerHTML="₹ "+total.toFixed(2);
-
-}
-
-function add(){
-
-let date=document.getElementById("date").value;
-
-let material=document.getElementById("material").value;
-
-let unit=document.getElementById("unit").value;
-
-let opening=Number(document.getElementById("opening").value);
-
-let received=Number(document.getElementById("received").value);
-
-let issued=Number(document.getElementById("issued").value);
-
-let rate=Number(document.getElementById("rate").value);
-
-let closing=opening+received-issued;
-
-let value=closing*rate;
-
-records.push({
-
-date,
-
-material,
-
-unit,
-
-opening,
-
-received,
-
-issued,
-
-closing,
-
-rate,
-
-value
-
-});
-
-localStorage.setItem("pwdstock",JSON.stringify(records));
-
-show();
-
-document.querySelectorAll("input").forEach(i=>i.value="");
-
-}
-
-show();
-
-</script>
+<script src="script.js"></script>
 
 </body>
+
 </html>
+  
