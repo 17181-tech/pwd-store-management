@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWD Store Management System</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+margin:0;
+}
+
+header{
+background:#003366;
+color:white;
+padding:15px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
+}
+
+.container{
+width:95%;
+margin:auto;
+padding:20px;
+}
+
+input{
+padding:10px;
+margin:5px;
+width:160px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+background:#007bff;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+background:white;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#003366;
+color:white;
+}
+
+tfoot{
+font-weight:bold;
+background:#eee;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+PWD STORE MANAGEMENT SYSTEM
+</header>
+
+<div class="container">
+
+<h2>Daily Stock Report</h2>
+
+<input type="date" id="date">
+
+<input type="text" id="material" placeholder="Material">
+
+<input type="text" id="unit" placeholder="Unit">
+
+<input type="number" id="opening" placeholder="Opening Stock">
+
+<input type="number" id="received" placeholder="Received">
+
+<input type="number" id="issued" placeholder="Issued">
+
+<input type="number" id="rate" placeholder="Rate">
+
+<button onclick="add()">Add Record</button>
+
+<button onclick="window.print()">Print</button>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Material</th>
+
+<th>Unit</th>
+
+<th>Opening</th>
+
+<th>Received</th>
+
+<th>Issued</th>
+
+<th>Closing</th>
+
+<th>Rate</th>
+
+<th>Value</th>
+
+</tr>
+
+</thead>
+
+<tbody id="data"></tbody>
+
+<tfoot>
+
+<tr>
+
+<td colspan="8">Total Value</td>
+
+<td id="total">0</td>
+
+</tr>
+
+</tfoot>
+
+</table>
+
+</div>
+
+<script>
+
+let records=JSON.parse(localStorage.getItem("pwdstock"))||[];
+
+function show(){
+
+let html="";
+
+let total=0;
+
+records.forEach((r)=>{
+
+total+=r.value;
+
+html+=`
+<tr>
+
+<td>${r.date}</td>
+
+<td>${r.material}</td>
+
+<td>${r.unit}</td>
+
+<td>${r.opening}</td>
+
+<td>${r.received}</td>
+
+<td>${r.issued}</td>
+
+<td>${r.closing}</td>
+
+<td>${r.rate}</td>
+
+<td>${r.value}</td>
+
+</tr>
+`;
+
+});
+
+document.getElementById("data").innerHTML=html;
+
+document.getElementById("total").innerHTML="₹ "+total.toFixed(2);
+
+}
+
+function add(){
+
+let date=document.getElementById("date").value;
+
+let material=document.getElementById("material").value;
+
+let unit=document.getElementById("unit").value;
+
+let opening=Number(document.getElementById("opening").value);
+
+let received=Number(document.getElementById("received").value);
+
+let issued=Number(document.getElementById("issued").value);
+
+let rate=Number(document.getElementById("rate").value);
+
+let closing=opening+received-issued;
+
+let value=closing*rate;
+
+records.push({
+
+date,
+
+material,
+
+unit,
+
+opening,
+
+received,
+
+issued,
+
+closing,
+
+rate,
+
+value
+
+});
+
+localStorage.setItem("pwdstock",JSON.stringify(records));
+
+show();
+
+document.querySelectorAll("input").forEach(i=>i.value="");
+
+}
+
+show();
+
+</script>
+
+</body>
+</html>
