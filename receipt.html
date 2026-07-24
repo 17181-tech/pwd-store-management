@@ -1,1 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receipt Register - PWD Store Management</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+<nav>
+<a href="index.html">Dashboard</a>
+<a href="materials.html">Material Master</a>
+<a href="receipt.html">Receipt Register</a>
+<a href="issue.html">Issue Register</a>
+<a href="ledger.html">Stock Ledger</a>
+<a href="stock.html">Current Stock</a>
+</nav>
+
+<header>
+<h1>Receipt Register</h1>
+<p>Record Material Receipts</p>
+</header>
+
+<div class="page">
+
+<div class="box">
+
+<h2>New Receipt</h2>
+
+<label>Date</label><br>
+<input type="date" id="receiptDate"><br><br>
+
+<label>Material</label><br>
+<select id="receiptMaterial"></select><br><br>
+
+<label>Quantity Received</label><br>
+<input type="number" id="receiptQty" placeholder="Enter Quantity"><br><br>
+
+<label>Supplier Name</label><br>
+<input type="text" id="supplier" placeholder="Supplier Name"><br><br>
+
+<label>Challan No.</label><br>
+<input type="text" id="challan" placeholder="Challan Number"><br><br>
+
+<label>Remarks</label><br>
+<input type="text" id="receiptRemarks" placeholder="Remarks"><br><br>
+
+<button onclick="saveReceipt()">
+Save Receipt
+</button>
+
+</div>
+
+<div class="box">
+
+<h2>Receipt Register</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+<th>Material</th>
+<th>Qty</th>
+<th>Supplier</th>
+<th>Challan</th>
+<th>Remarks</th>
+
+</tr>
+
+</thead>
+
+<tbody id="receiptTable">
+
+</tbody>
+  </tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let materials = JSON.parse(localStorage.getItem("materials")) || [];
+let receipts = JSON.parse(localStorage.getItem("receipts")) || [];
+
+function saveData(){
+    localStorage.setItem("materials", JSON.stringify(materials));
+    localStorage.setItem("receipts", JSON.stringify(receipts));
+}
+
+function loadMaterials(){
+
+    let select = document.getElementById("receiptMaterial");
+
+    select.innerHTML = "<option value=''>Select Material</option>";
+
+    materials.forEach(function(item,index){
+
+        select.innerHTML +=
+        `<option value="${index}">
+            ${item.name} (${item.unit})
+        </option>`;
+
+    });
+
+}
+
+function saveReceipt(){
+
+    let date = document.getElementById("receiptDate").value;
+    let index = document.getElementById("receiptMaterial").value;
+    let qty = Number(document.getElementById("receiptQty").value);
+    let supplier = document.getElementById("supplier").value;
+    let challan = document.getElementById("challan").value;
+    let remarks = document.getElementById("receiptRemarks").value;
+
+    if(date=="" || index=="" || qty<=0){
+
+        alert("Please fill all required fields.");
+
+        return;
+
+    }
+
+    materials[index].balance += qty;
+
+    receipts.push({
+
+        date:date,
+        material:materials[index].name,
+        unit:materials[index].unit,
+        qty:qty,
+        supplier:supplier,
+        challan:challan,
+        remarks:remarks
+
+    });
+
+    saveData();
+
+    document.getElementById("receiptQty").value="";
+    document.getElementById("supplier").value="";
+    document.getElementById("challan").value="";
+    document.getElementById("receiptRemarks").value="";
+
+    loadTable();
+
+    alert("Receipt Saved Successfully.");
+
+}
+
+function loadTable(){
+
+    let html="";
+
+    receipts.forEach(function(r){
+
+        html += `
+        <tr>
+
+        <td>${r.date}</td>
+
+        <td>${r.material}</td>
+
+        <td>${r.qty} ${r.unit}</td>
+
+        <td>${r.supplier}</td>
+
+        <td>${r.challan}</td>
+
+        <td>${r.remarks}</td>
+
+        </tr>
+        `;
+
+    });
+
+   
