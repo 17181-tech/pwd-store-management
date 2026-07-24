@@ -1,1 +1,226 @@
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stock Ledger</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav>
+
+<a href="index.html">Dashboard</a>
+
+<a href="materials.html">Material Master</a>
+
+<a href="receipt.html">Receipt Register</a>
+
+<a href="issue.html">Issue Register</a>
+
+<a href="ledger.html">Stock Ledger</a>
+
+<a href="stock.html">Current Stock</a>
+
+</nav>
+
+<header>
+
+<h1>Material Wise Stock Ledger</h1>
+
+<p>View complete transaction history of any material</p>
+
+</header>
+
+<div class="page">
+
+<div class="box">
+
+<h2>Select Material</h2>
+
+<select id="ledgerMaterial">
+
+<option value="">Select Material</option>
+
+</select>
+
+<button onclick="showLedger()">
+
+Show Ledger
+
+</button>
+
+</div>
+
+<div class="box">
+
+<h2>Stock Ledger</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Transaction</th>
+
+<th>Receipt</th>
+
+<th>Issue</th>
+
+<th>Balance</th>
+
+<th>Remarks</th>
+
+</tr>
+
+</thead>
+
+<tbody id="ledgerTable">
+  </tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let materials = JSON.parse(localStorage.getItem("materials")) || [];
+let receipts = JSON.parse(localStorage.getItem("receipts")) || [];
+let issues = JSON.parse(localStorage.getItem("issues")) || [];
+
+function loadMaterials(){
+
+let select=document.getElementById("ledgerMaterial");
+
+select.innerHTML="<option value=''>Select Material</option>";
+
+materials.forEach(function(m){
+
+select.innerHTML+=`
+<option value="${m.name}">
+${m.name}
+</option>
+`;
+
+});
+
+}
+
+function showLedger(){
+
+let material=document.getElementById("ledgerMaterial").value;
+
+if(material==""){
+
+alert("Please select a material.");
+
+return;
+
+}
+
+let ledger=[];
+
+receipts.forEach(function(r){
+
+if(r.material===material){
+
+ledger.push({
+
+date:r.date,
+
+type:"Receipt",
+
+receipt:r.qty,
+
+issue:0,
+
+remarks:r.remarks
+
+});
+
+}
+
+});
+
+issues.forEach(function(i){
+
+if(i.material===material){
+
+ledger.push({
+
+date:i.date,
+
+type:"Issue",
+
+receipt:0,
+
+issue:i.qty,
+
+remarks:i.remarks
+
+});
+
+}
+
+});
+
+ledger.sort(function(a,b){
+
+return new Date(a.date)-new Date(b.date);
+
+});
+
+let balance=0;
+
+let html="";
+
+ledger.forEach(function(item){
+
+balance=balance+item.receipt-item.issue;
+
+html+=`
+
+<tr>
+
+<td>${item.date}</td>
+
+<td>${item.type}</td>
+
+<td>${item.receipt}</td>
+
+<td>${item.issue}</td>
+
+<td>${balance}</td>
+
+<td>${item.remarks}</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("ledgerTable").innerHTML=html;
+
+}
+
+loadMaterials();
+
+</script>
+
+</body>
+
+</html>
